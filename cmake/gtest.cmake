@@ -46,13 +46,13 @@ target_include_directories(gtest_main INTERFACE ${GTEST_PKG_DIR}/include)
 add_library(gmock SHARED IMPORTED)
 
 set_target_properties(gmock PROPERTIES
-        IMPORTED_LOCATION ${GTEST_PKG_DIR}/lib/libgmock.so
+        IMPORTED_LOCATION ${GTEST_PKG_DIR}/lib/libgmock.dylib
         )
 
 add_library(gmock_main SHARED IMPORTED)
 
 set_target_properties(gmock_main PROPERTIES
-        IMPORTED_LOCATION ${GTEST_PKG_DIR}/lib/libgmock_main.so
+        IMPORTED_LOCATION ${GTEST_PKG_DIR}/lib/libgmock_main.dylib
         )
 
 target_include_directories(gmock INTERFACE ${GTEST_PKG_DIR}/include)
@@ -62,7 +62,7 @@ target_include_directories(gmock_main INTERFACE ${GTEST_PKG_DIR}/include)
 set(INSTALL_BASE_DIR "")
 set(INSTALL_LIBRARY_DIR lib)
 
-install(FILES ${GTEST_PKG_DIR}/lib/libgtest.so ${GTEST_PKG_DIR}/lib/libgtest_main.so ${GTEST_PKG_DIR}/lib/libgmock.so ${GTEST_PKG_DIR}/lib/libgmock_main.so OPTIONAL
+install(FILES ${GTEST_PKG_DIR}/lib/libgtest.so ${GTEST_PKG_DIR}/lib/libgtest_main.dylib ${GTEST_PKG_DIR}/lib/libgmock.dylib ${GTEST_PKG_DIR}/lib/libgmock_main.so OPTIONAL
         DESTINATION ${INSTALL_LIBRARY_DIR})
 
 install(DIRECTORY ${GTEST_INCLUDE} DESTINATION ${GTEST_PKG_DIR}/include)
