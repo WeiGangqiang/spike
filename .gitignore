@@ -1,0 +1,10 @@
+build/
+output/
+.DS_Store
+.cproject
+.idea/
+.project
+.settings/
+.vscode/
+cmake-build-debugindocker/
+cmake-build-debug/
