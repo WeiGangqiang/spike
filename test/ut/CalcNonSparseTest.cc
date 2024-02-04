@@ -112,6 +112,7 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
     }
   }
+  return 0;
 }
 //
 //int calculate_non_sparse_highway_refact(array<array<uint8_t, 64>, 32> &ab,
