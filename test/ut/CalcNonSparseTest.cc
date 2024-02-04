@@ -104,12 +104,12 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
                                  array<array<int32_t, 64>, 32> &partial_sum) {
   for (size_t m = 0; m != 32; ++m) {
     for (size_t k = 0; k != 32; ++k) {
-      array<int16_t, 16> temp;
+      array<int16_t, 32> temp;
       temp.fill(int8_t(ab[m][k]));
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data()), partial_sum[m].data());
-      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
+//      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 32), partial_sum[m].data() + 32);
-      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
+//      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
     }
   }
   return 0;
@@ -199,7 +199,11 @@ bool CompareEqual(array<array<uint8_t, 64>, 32>& ab, array<array<uint8_t, 64>, 3
 TEST(CalcNonSparseTest, highway_and_normal_compare){
 
     hn::ScalableTag<int32_t> d32;
+    hn::ScalableTag<int8_t> d8;
+    hn::ScalableTag<int16_t> d16;
 
+    printf("lane 8 %d \n", hn::Lanes(d8));
+    printf("lane 16 %d \n", hn::Lanes(d16));
     printf("lane 32 %d \n", hn::Lanes(d32));
 
     array<array<uint8_t, 64>, 32> ab;
