@@ -1,5 +1,5 @@
 #include "MpmcQueue.h"
-#include <arm_neon.h>
+//#include <arm_neon.h>
 #include <array>
 #include <benchmark/benchmark.h>
 #include <hwy/highway.h>
