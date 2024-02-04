@@ -174,8 +174,8 @@ int calculate_non_sparse(array<array<uint8_t, 64>, 32>& ab, array<array<uint8_t,
 
 
 bool CompareEqual(array<array<uint8_t, 64>, 32>& ab, array<array<uint8_t, 64>, 32>& wb){
-  array<array<int32_t, 64>, 32> normalRet;
-  array<array<int32_t, 64>, 32> highWayRet;
+  alignas(32)  array<array<int32_t, 64>, 32> normalRet;
+  alignas(32)  array<array<int32_t, 64>, 32> highWayRet;
   normalRet = {{0}};
   highWayRet = {{0}};
 
@@ -206,8 +206,8 @@ TEST(CalcNonSparseTest, highway_and_normal_compare){
     printf("lane 16 %d \n", hn::Lanes(d16));
     printf("lane 32 %d \n", hn::Lanes(d32));
 
-    array<array<uint8_t, 64>, 32> ab;
-    array<array<uint8_t, 64>, 32> wb;
+    alignas(32) array<array<uint8_t, 64>, 32> ab;
+    alignas(32) array<array<uint8_t, 64>, 32> wb;
 
     for(size_t i = 0; i< 32; i++){
       ab[i].fill(uint8_t(2));

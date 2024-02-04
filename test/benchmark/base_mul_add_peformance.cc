@@ -121,17 +121,17 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
       hn::ScalableTag<int8_t> d8;
       temp.fill(int8_t(ab[m][k]));
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data()), partial_sum[m].data());
-      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
+//      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 32), partial_sum[m].data() + 32);
-      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
+//      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
     }
   }
 }
 
 static void BM_calculate_non_sparse_highway(benchmark::State& state) {
-  alignas(16)  array<array<uint8_t, 64>, 32> ab;
-  alignas(16)  array<array<uint8_t, 64>, 32> wb;
-  alignas(16)  array<array<int32_t, 64>, 32> partial_sum;
+  alignas(32)  array<array<uint8_t, 64>, 32> ab;
+  alignas(32)  array<array<uint8_t, 64>, 32> wb;
+  alignas(32)  array<array<int32_t, 64>, 32> partial_sum;
 
   for(size_t i = 0; i< 32; i++){
     ab[i].fill(uint8_t(12));
