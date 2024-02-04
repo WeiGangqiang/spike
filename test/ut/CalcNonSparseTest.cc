@@ -197,6 +197,11 @@ bool CompareEqual(array<array<uint8_t, 64>, 32>& ab, array<array<uint8_t, 64>, 3
 
 
 TEST(CalcNonSparseTest, highway_and_normal_compare){
+
+    hn::ScalableTag<int32_t> d32;
+
+    printf("lane 32 %d \n", hn::Lanes(d32));
+
     array<array<uint8_t, 64>, 32> ab;
     array<array<uint8_t, 64>, 32> wb;
 

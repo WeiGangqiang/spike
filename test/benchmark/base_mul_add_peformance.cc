@@ -120,7 +120,6 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
       array<int16_t, 16> temp;
       hn::ScalableTag<int8_t> d8;
       temp.fill(int8_t(ab[m][k]));
-
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data()), partial_sum[m].data());
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 32), partial_sum[m].data() + 32);
