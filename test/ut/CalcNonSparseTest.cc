@@ -184,7 +184,7 @@ bool CompareEqual(array<array<uint8_t, 64>, 32>& ab, array<array<uint8_t, 64>, 3
   for(size_t i = 0; i < 32 ; i++){
     for(size_t j = 0; j< 64; j++){
       if(normalRet[i][j] != highWayRet[i][j]){
-        printf("pos[%d][%d], value : %d  != %d \n", i, j, normalRet[i][j], highWayRet[i][j]);
+        printf("pos[%ld][%ld], value : %d  != %d \n", i, j, normalRet[i][j], highWayRet[i][j]);
         return false;
       }
     }
