@@ -250,54 +250,54 @@ BENCHMARK(BM_calculate_non_sparse_highway);
 
 //BENCHMARK(BM_calculate_non_sparse_new);
 
-
-using IntArray = array<uint8_t, 64>;
-
-int normal_sum(IntArray& ab, IntArray& aw, IntArray & sum){
-  for(size_t i = 0; i< 64; i++){
-    sum[i]  += ab[i] * aw[i];
-  }
-  return 1;
-}
-
-int normal_sum_neon(IntArray & ab, IntArray & aw, IntArray& sum){
-  for(size_t i = 0; i< 64; i = i+16 ){
-    int8x16_t v_ab = vld1q_s8(reinterpret_cast<const int8_t*>(&ab[i])); // 加载wb
-    int8x16_t v_aw = vld1q_s8(reinterpret_cast<const int8_t*>(&aw[i])); // 加载wb
-    int8x16_t v_sum = vld1q_s8(reinterpret_cast<const int8_t*>(&sum[i])); // 加载wb
-    v_sum = vmlaq_s8(v_sum, v_ab, v_aw);
-    vst1q_s8(reinterpret_cast<int8_t*>(&sum[i]), v_sum);
-  }
-  return 1;
-}
-
-static void BM_normal_sum(benchmark::State& state) {
-  IntArray ab;
-  IntArray aw;
-  IntArray sum;
-  ab.fill(2);
-  aw.fill(4);
-  sum.fill(0);
-
-  for (auto _ : state) {
-    benchmark::DoNotOptimize(normal_sum(ab, aw, sum));
-  }
-}
-
-BENCHMARK(BM_normal_sum);
-
-
-static void BM_normal_sum_neon(benchmark::State& state) {
-  IntArray ab;
-  IntArray aw;
-  IntArray sum;
-  ab.fill(2);
-  aw.fill(4);
-  sum.fill(0);
-
-  for (auto _ : state) {
-    benchmark::DoNotOptimize(normal_sum_neon(ab, aw, sum));
-  }
-}
-
-BENCHMARK(BM_normal_sum_neon);
+//
+//using IntArray = array<uint8_t, 64>;
+//
+//int normal_sum(IntArray& ab, IntArray& aw, IntArray & sum){
+//  for(size_t i = 0; i< 64; i++){
+//    sum[i]  += ab[i] * aw[i];
+//  }
+//  return 1;
+//}
+//
+//int normal_sum_neon(IntArray & ab, IntArray & aw, IntArray& sum){
+//  for(size_t i = 0; i< 64; i = i+16 ){
+//    int8x16_t v_ab = vld1q_s8(reinterpret_cast<const int8_t*>(&ab[i])); // 加载wb
+//    int8x16_t v_aw = vld1q_s8(reinterpret_cast<const int8_t*>(&aw[i])); // 加载wb
+//    int8x16_t v_sum = vld1q_s8(reinterpret_cast<const int8_t*>(&sum[i])); // 加载wb
+//    v_sum = vmlaq_s8(v_sum, v_ab, v_aw);
+//    vst1q_s8(reinterpret_cast<int8_t*>(&sum[i]), v_sum);
+//  }
+//  return 1;
+////}
+////
+////static void BM_normal_sum(benchmark::State& state) {
+////  IntArray ab;
+////  IntArray aw;
+////  IntArray sum;
+////  ab.fill(2);
+////  aw.fill(4);
+////  sum.fill(0);
+////
+////  for (auto _ : state) {
+////    benchmark::DoNotOptimize(normal_sum(ab, aw, sum));
+////  }
+////}
+////
+////BENCHMARK(BM_normal_sum);
+//
+//
+//static void BM_normal_sum_neon(benchmark::State& state) {
+//  IntArray ab;
+//  IntArray aw;
+//  IntArray sum;
+//  ab.fill(2);
+//  aw.fill(4);
+//  sum.fill(0);
+//
+//  for (auto _ : state) {
+//    benchmark::DoNotOptimize(normal_sum_neon(ab, aw, sum));
+//  }
+//}
+//
+//BENCHMARK(BM_normal_sum_neon);
