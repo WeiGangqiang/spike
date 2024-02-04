@@ -212,43 +212,43 @@ BENCHMARK(BM_calculate_non_sparse_highway);
 
 
 
+//
+//int calculate_non_sparse_new(array<array<uint8_t, 64>, 32> &ab,
+//                             array<array<uint8_t, 64>, 32> &wb,
+//                             array<array<uint32_t, 64>, 32> &partial_sum) {
+//  for (size_t m = 0; m != 32; ++m) {
+//    for (size_t k = 0; k != 32; ++k) {
+//      array<int16_t, 4> temp;
+//      temp.fill(int16_t(ab[m][k]));
+//      int16x4_t v_ab = vld1_s16(reinterpret_cast<const int16_t *>(temp.data())); // 加载wb
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()), reinterpret_cast<int32_t *>(partial_sum[m].data()));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 8), reinterpret_cast<int32_t *>(partial_sum[m].data() + 8));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 16), reinterpret_cast<int32_t *>(partial_sum[m].data() + 16));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 24), reinterpret_cast<int32_t *>(partial_sum[m].data() + 24));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 32), reinterpret_cast<int32_t *>(partial_sum[m].data() + 32));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 40), reinterpret_cast<int32_t *>(partial_sum[m].data() + 40));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 48), reinterpret_cast<int32_t *>(partial_sum[m].data() + 48));
+//      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 56), reinterpret_cast<int32_t *>(partial_sum[m].data() + 56));
+//    }
+//  }
+//  return 1;
+//}
+//
+//static void BM_calculate_non_sparse_new(benchmark::State& state) {
+//  array<array<uint32_t, 64>, 32> partial_sum;
+//  array<array<uint8_t, 64>, 32> ab;
+//  array<array<uint8_t, 64>, 32> wb;
+//
+//  for(size_t i = 0; i< 32; i++){
+//    ab[i].fill(uint8_t(12));
+//    wb[i].fill(uint8_t(99));
+//  }
+//  for (auto _ : state) {
+//    benchmark::DoNotOptimize(calculate_non_sparse_new(ab, wb, partial_sum));
+//  }
+//}
 
-int calculate_non_sparse_new(array<array<uint8_t, 64>, 32> &ab,
-                             array<array<uint8_t, 64>, 32> &wb,
-                             array<array<uint32_t, 64>, 32> &partial_sum) {
-  for (size_t m = 0; m != 32; ++m) {
-    for (size_t k = 0; k != 32; ++k) {
-      array<int16_t, 4> temp;
-      temp.fill(int16_t(ab[m][k]));
-      int16x4_t v_ab = vld1_s16(reinterpret_cast<const int16_t *>(temp.data())); // 加载wb
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()), reinterpret_cast<int32_t *>(partial_sum[m].data()));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 8), reinterpret_cast<int32_t *>(partial_sum[m].data() + 8));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 16), reinterpret_cast<int32_t *>(partial_sum[m].data() + 16));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 24), reinterpret_cast<int32_t *>(partial_sum[m].data() + 24));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 32), reinterpret_cast<int32_t *>(partial_sum[m].data() + 32));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 40), reinterpret_cast<int32_t *>(partial_sum[m].data() + 40));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 48), reinterpret_cast<int32_t *>(partial_sum[m].data() + 48));
-      vmulAdd(v_ab, reinterpret_cast<int8_t *>(wb[k].data()+ 56), reinterpret_cast<int32_t *>(partial_sum[m].data() + 56));
-    }
-  }
-  return 1;
-}
-
-static void BM_calculate_non_sparse_new(benchmark::State& state) {
-  array<array<uint32_t, 64>, 32> partial_sum;
-  array<array<uint8_t, 64>, 32> ab;
-  array<array<uint8_t, 64>, 32> wb;
-
-  for(size_t i = 0; i< 32; i++){
-    ab[i].fill(uint8_t(12));
-    wb[i].fill(uint8_t(99));
-  }
-  for (auto _ : state) {
-    benchmark::DoNotOptimize(calculate_non_sparse_new(ab, wb, partial_sum));
-  }
-}
-
-BENCHMARK(BM_calculate_non_sparse_new);
+//BENCHMARK(BM_calculate_non_sparse_new);
 
 
 using IntArray = array<uint8_t, 64>;
