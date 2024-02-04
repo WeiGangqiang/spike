@@ -34,7 +34,7 @@ static void BM_calculate_non_sparse(benchmark::State& state) {
   }
 }
 
-BENCHMARK(BM_calculate_non_sparse);
+BENCHMARK(BM_calculate_non_sparse)->Iterations(10);
 
 //
 //inline void vmulAdd(int16x4_t& v_ab, int8_t* wb, int32_t* sum){
@@ -143,7 +143,7 @@ static void BM_calculate_non_sparse_highway(benchmark::State& state) {
   }
 }
 
-BENCHMARK(BM_calculate_non_sparse_highway);
+BENCHMARK(BM_calculate_non_sparse_highway)->Iterations(10);
 
 
 //
