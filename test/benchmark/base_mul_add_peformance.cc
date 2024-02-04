@@ -117,7 +117,7 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
                                  array<array<int32_t, 64>, 32> &partial_sum) {
   for (size_t m = 0; m != 32; ++m) {
     for (size_t k = 0; k != 32; ++k) {
-      array<int16_t, 16> temp;
+      alignas(32) array<int16_t, 16> temp;
       hn::ScalableTag<int8_t> d8;
       temp.fill(int8_t(ab[m][k]));
       HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data()), partial_sum[m].data());
