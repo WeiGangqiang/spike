@@ -36,49 +36,49 @@ static void BM_calculate_non_sparse(benchmark::State& state) {
 
 BENCHMARK(BM_calculate_non_sparse);
 
-
-inline void vmulAdd(int16x4_t& v_ab, int8_t* wb, int32_t* sum){
-  int8x8_t v_wb = vld1_s8(wb); // 加载wb
-  int16x8_t v_wb1= vmovl_s8(v_wb);
-  int32x4_t v_sum1 = vld1q_s32(sum);
-  int32x4_t v_sum2 = vld1q_s32(sum + 4);
-  v_sum1 = vmlal_s16(v_sum1, v_ab, vget_high_s16(v_wb1));
-  v_sum2 = vmlal_s16(v_sum1, v_ab, vget_low_s16(v_wb1));
-  vst1q_s32(sum, v_sum1);
-  vst1q_s32(sum + 4, v_sum2);
-}
-
-inline void HighwayMulAdd(const int16_t *ab, const int8_t *wb, int32_t *sum) {
-  hn::ScalableTag<int8_t> d8;
-  hn::ScalableTag<int16_t> d16;
-  hn::ScalableTag<int32_t> d32;
-  auto v_ab = hn::Load(d16, ab);
-  auto v_wb = hn::Load(d8, wb);
-
-  auto v_wb10 = hn::PromoteTo(d16, hn::UpperHalf(d8, v_wb));
-  auto v_wb01 = hn::PromoteTo(d16, hn::LowerHalf(v_wb));
-  auto mul10 = hn::Mul(v_ab, v_wb01);
-  auto mul01 = hn::Mul(v_ab, v_wb10);
-
-  auto v_sum1000 = hn::Load(d32, sum);
-  auto v_sum0100 = hn::Load(d32, sum + hn::Lanes(d32));
-  auto v_sum0010 = hn::Load(d32, sum + 2 * hn::Lanes(d32));
-  auto v_sum0001 = hn::Load(d32, sum + 3 * hn::Lanes(d32));
-  auto mul1000 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul10));
-  auto mul0100 = hn::PromoteTo(d32, hn::LowerHalf(mul10));
-  auto mul0010 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul01));
-  auto mul0001 = hn::PromoteTo(d32, hn::LowerHalf(mul01));
-
-  v_sum1000 = hn::Add(v_sum1000, mul1000);
-  v_sum0100 = hn::Add(v_sum0100, mul0100);
-  v_sum0010 = hn::Add(v_sum0010, mul0010);
-  v_sum0001 = hn::Add(v_sum0001, mul0001);
-
-  hn::Store(v_sum1000, d32, sum);
-  hn::Store(v_sum0100, d32, sum + hn::Lanes(d32));
-  hn::Store(v_sum0010, d32, sum + 2 * hn::Lanes(d32));
-  hn::Store(v_sum0001, d32, sum + 3 * hn::Lanes(d32));
-}
+//
+//inline void vmulAdd(int16x4_t& v_ab, int8_t* wb, int32_t* sum){
+//  int8x8_t v_wb = vld1_s8(wb); // 加载wb
+//  int16x8_t v_wb1= vmovl_s8(v_wb);
+//  int32x4_t v_sum1 = vld1q_s32(sum);
+//  int32x4_t v_sum2 = vld1q_s32(sum + 4);
+//  v_sum1 = vmlal_s16(v_sum1, v_ab, vget_high_s16(v_wb1));
+//  v_sum2 = vmlal_s16(v_sum1, v_ab, vget_low_s16(v_wb1));
+//  vst1q_s32(sum, v_sum1);
+//  vst1q_s32(sum + 4, v_sum2);
+//}
+//
+//inline void HighwayMulAdd(const int16_t *ab, const int8_t *wb, int32_t *sum) {
+//  hn::ScalableTag<int8_t> d8;
+//  hn::ScalableTag<int16_t> d16;
+//  hn::ScalableTag<int32_t> d32;
+//  auto v_ab = hn::Load(d16, ab);
+//  auto v_wb = hn::Load(d8, wb);
+//
+//  auto v_wb10 = hn::PromoteTo(d16, hn::UpperHalf(d8, v_wb));
+//  auto v_wb01 = hn::PromoteTo(d16, hn::LowerHalf(v_wb));
+//  auto mul10 = hn::Mul(v_ab, v_wb01);
+//  auto mul01 = hn::Mul(v_ab, v_wb10);
+//
+//  auto v_sum1000 = hn::Load(d32, sum);
+//  auto v_sum0100 = hn::Load(d32, sum + hn::Lanes(d32));
+//  auto v_sum0010 = hn::Load(d32, sum + 2 * hn::Lanes(d32));
+//  auto v_sum0001 = hn::Load(d32, sum + 3 * hn::Lanes(d32));
+//  auto mul1000 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul10));
+//  auto mul0100 = hn::PromoteTo(d32, hn::LowerHalf(mul10));
+//  auto mul0010 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul01));
+//  auto mul0001 = hn::PromoteTo(d32, hn::LowerHalf(mul01));
+//
+//  v_sum1000 = hn::Add(v_sum1000, mul1000);
+//  v_sum0100 = hn::Add(v_sum0100, mul0100);
+//  v_sum0010 = hn::Add(v_sum0010, mul0010);
+//  v_sum0001 = hn::Add(v_sum0001, mul0001);
+//
+//  hn::Store(v_sum1000, d32, sum);
+//  hn::Store(v_sum0100, d32, sum + hn::Lanes(d32));
+//  hn::Store(v_sum0010, d32, sum + 2 * hn::Lanes(d32));
+//  hn::Store(v_sum0001, d32, sum + 3 * hn::Lanes(d32));
+//}
 
 inline void HighwayMulAddIntel(const int16_t *ab, const int8_t *wb, int32_t *sum) {
   hn::ScalableTag<int8_t> d8;
@@ -147,68 +147,68 @@ static void BM_calculate_non_sparse_highway(benchmark::State& state) {
 BENCHMARK(BM_calculate_non_sparse_highway);
 
 
+//
+//int calculate_non_sparse_highway_refact(array<array<uint8_t, 64>, 32> &ab,
+//                                        array<array<uint8_t, 64>, 32> &wb_ori,
+//                                        array<array<int32_t, 64>, 32> &partial_sum) {
+//  for (size_t m = 0; m != 32; ++m) {
+//    for (size_t k = 0; k != 32; ++k) {
+//      hn::ScalableTag<int8_t> d8;
+//      hn::ScalableTag<int16_t> d16;
+//      hn::ScalableTag<int32_t> d32;
+//      array<int16_t, hn::Lanes(d8)> temp;
+//      temp.fill(int8_t(ab[m][k]));
+//      auto v_ab = hn::Load(d16, temp.data());
+//      for (size_t n = 0; n < 64;  n = n + hn::Lanes(d8)){
+//        auto wb = reinterpret_cast<int8_t *>(wb_ori[k].data() + n);
+//        auto sum = partial_sum[m].data() + n;
+//        auto v_wb = hn::Load(d8, wb);
+//
+//        auto v_wb10 = hn::PromoteTo(d16, hn::UpperHalf(d8, v_wb));
+//        auto v_wb01 = hn::PromoteTo(d16, hn::LowerHalf(v_wb));
+//        auto mul10 = hn::Mul(v_ab, v_wb01);
+//        auto mul01 = hn::Mul(v_ab, v_wb10);
+//
+//        auto v_sum1000 = hn::Load(d32, sum);
+//        auto v_sum0100 = hn::Load(d32, sum + hn::Lanes(d32));
+//        auto v_sum0010 = hn::Load(d32, sum + 2 * hn::Lanes(d32));
+//        auto v_sum0001 = hn::Load(d32, sum + 3 * hn::Lanes(d32));
+//        auto mul1000 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul10));
+//        auto mul0100 = hn::PromoteTo(d32, hn::LowerHalf(mul10));
+//        auto mul0010 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul01));
+//        auto mul0001 = hn::PromoteTo(d32, hn::LowerHalf(mul01));
+//
+//        v_sum1000 = hn::Add(v_sum1000, mul1000);
+//        v_sum0100 = hn::Add(v_sum0100, mul0100);
+//        v_sum0010 = hn::Add(v_sum0010, mul0010);
+//        v_sum0001 = hn::Add(v_sum0001, mul0001);
+//
+//        hn::Store(v_sum1000, d32, sum);
+//        hn::Store(v_sum0100, d32, sum + hn::Lanes(d32));
+//        hn::Store(v_sum0010, d32, sum + 2 * hn::Lanes(d32));
+//        hn::Store(v_sum0001, d32, sum + 3 * hn::Lanes(d32));
+//      }
+//    }
+//  }
+//}
 
-int calculate_non_sparse_highway_refact(array<array<uint8_t, 64>, 32> &ab,
-                                        array<array<uint8_t, 64>, 32> &wb_ori,
-                                        array<array<int32_t, 64>, 32> &partial_sum) {
-  for (size_t m = 0; m != 32; ++m) {
-    for (size_t k = 0; k != 32; ++k) {
-      hn::ScalableTag<int8_t> d8;
-      hn::ScalableTag<int16_t> d16;
-      hn::ScalableTag<int32_t> d32;
-      array<int16_t, hn::Lanes(d8)> temp;
-      temp.fill(int8_t(ab[m][k]));
-      auto v_ab = hn::Load(d16, temp.data());
-      for (size_t n = 0; n < 64;  n = n + hn::Lanes(d8)){
-        auto wb = reinterpret_cast<int8_t *>(wb_ori[k].data() + n);
-        auto sum = partial_sum[m].data() + n;
-        auto v_wb = hn::Load(d8, wb);
-
-        auto v_wb10 = hn::PromoteTo(d16, hn::UpperHalf(d8, v_wb));
-        auto v_wb01 = hn::PromoteTo(d16, hn::LowerHalf(v_wb));
-        auto mul10 = hn::Mul(v_ab, v_wb01);
-        auto mul01 = hn::Mul(v_ab, v_wb10);
-
-        auto v_sum1000 = hn::Load(d32, sum);
-        auto v_sum0100 = hn::Load(d32, sum + hn::Lanes(d32));
-        auto v_sum0010 = hn::Load(d32, sum + 2 * hn::Lanes(d32));
-        auto v_sum0001 = hn::Load(d32, sum + 3 * hn::Lanes(d32));
-        auto mul1000 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul10));
-        auto mul0100 = hn::PromoteTo(d32, hn::LowerHalf(mul10));
-        auto mul0010 = hn::PromoteTo(d32, hn::UpperHalf(d16, mul01));
-        auto mul0001 = hn::PromoteTo(d32, hn::LowerHalf(mul01));
-
-        v_sum1000 = hn::Add(v_sum1000, mul1000);
-        v_sum0100 = hn::Add(v_sum0100, mul0100);
-        v_sum0010 = hn::Add(v_sum0010, mul0010);
-        v_sum0001 = hn::Add(v_sum0001, mul0001);
-
-        hn::Store(v_sum1000, d32, sum);
-        hn::Store(v_sum0100, d32, sum + hn::Lanes(d32));
-        hn::Store(v_sum0010, d32, sum + 2 * hn::Lanes(d32));
-        hn::Store(v_sum0001, d32, sum + 3 * hn::Lanes(d32));
-      }
-    }
-  }
-}
-
-
-static void BM_calculate_non_sparse_highway_refact(benchmark::State& state) {
-  array<array<uint8_t, 64>, 32> ab;
-  array<array<uint8_t, 64>, 32> wb;
-  array<array<int32_t, 64>, 32> partial_sum;
-
-  for(size_t i = 0; i< 32; i++){
-    ab[i].fill(uint8_t(12));
-    wb[i].fill(uint8_t(99));
-    partial_sum[i].fill(0);
-  }
-  for (auto _ : state) {
-    benchmark::DoNotOptimize(calculate_non_sparse_highway_refact(ab, wb, partial_sum));
-  }
-}
-
-BENCHMARK(BM_calculate_non_sparse_highway_refact);
+//
+//static void BM_calculate_non_sparse_highway_refact(benchmark::State& state) {
+//  array<array<uint8_t, 64>, 32> ab;
+//  array<array<uint8_t, 64>, 32> wb;
+//  array<array<int32_t, 64>, 32> partial_sum;
+//
+//  for(size_t i = 0; i< 32; i++){
+//    ab[i].fill(uint8_t(12));
+//    wb[i].fill(uint8_t(99));
+//    partial_sum[i].fill(0);
+//  }
+//  for (auto _ : state) {
+//    benchmark::DoNotOptimize(calculate_non_sparse_highway_refact(ab, wb, partial_sum));
+//  }
+//}
+//
+//BENCHMARK(BM_calculate_non_sparse_highway_refact);
 
 
 
