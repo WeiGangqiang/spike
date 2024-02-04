@@ -1,7 +1,7 @@
-#include "MemBuf.h"
+#include "MpmcQueue.h"
 #include "gtest/gtest.h"
-#include <hwy/highway.h>
 #include <array>
+#include <hwy/highway.h>
 using namespace  std;
 namespace hn = hwy::HWY_NAMESPACE;
 
@@ -33,6 +33,38 @@ TEST(CalcNonSparseTest, check_int8_convet) {
 }
 
 namespace {
+
+inline void HighwayMulAddIntel(const int16_t *ab, const int8_t *wb, int32_t *sum) {
+  hn::ScalableTag<int8_t> d8;
+  hn::ScalableTag<int16_t> d16;
+  hn::ScalableTag<int32_t> d32;
+  auto v_ab = hn::Load(d16, ab);
+  auto v_wb = hn::Load(d8, wb);
+
+  auto v_wb10 = hn::PromoteUpperTo(d16, v_wb);
+  auto v_wb01 = hn::PromoteLowerTo(d16, v_wb);
+  auto mul10 = hn::Mul(v_ab, v_wb01);
+  auto mul01 = hn::Mul(v_ab, v_wb10);
+
+  auto v_sum1000 = hn::Load(d32, sum);
+  auto v_sum0100 = hn::Load(d32, sum + hn::Lanes(d32));
+  auto v_sum0010 = hn::Load(d32, sum + 2 * hn::Lanes(d32));
+  auto v_sum0001 = hn::Load(d32, sum + 3 * hn::Lanes(d32));
+  auto mul1000 = hn::PromoteUpperTo(d32, mul10);
+  auto mul0100 = hn::PromoteLowerTo(d32, mul10);
+  auto mul0010 = hn::PromoteUpperTo(d32,mul01);
+  auto mul0001 = hn::PromoteLowerTo(d32, mul01);
+
+  v_sum1000 = hn::Add(v_sum1000, mul1000);
+  v_sum0100 = hn::Add(v_sum0100, mul0100);
+  v_sum0010 = hn::Add(v_sum0010, mul0010);
+  v_sum0001 = hn::Add(v_sum0001, mul0001);
+
+  hn::Store(v_sum1000, d32, sum);
+  hn::Store(v_sum0100, d32, sum + hn::Lanes(d32));
+  hn::Store(v_sum0010, d32, sum + 2 * hn::Lanes(d32));
+  hn::Store(v_sum0001, d32, sum + 3 * hn::Lanes(d32));
+}
 
 
 inline void HighwayMulAdd(const int16_t *ab, const int8_t *wb, int32_t *sum) {
@@ -74,10 +106,10 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
     for (size_t k = 0; k != 32; ++k) {
       array<int16_t, 16> temp;
       temp.fill(int8_t(ab[m][k]));
-      HighwayMulAdd(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data()), partial_sum[m].data());
-      HighwayMulAdd(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
-      HighwayMulAdd(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 32), partial_sum[m].data() + 32);
-      HighwayMulAdd(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
+      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data()), partial_sum[m].data());
+      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 16), partial_sum[m].data() + 16);
+      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 32), partial_sum[m].data() + 32);
+      HighwayMulAddIntel(temp.data(),  reinterpret_cast<int8_t *>(wb[k].data() + 48), partial_sum[m].data() + 48);
     }
   }
 }
