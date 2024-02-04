@@ -130,9 +130,9 @@ int calculate_non_sparse_highway(array<array<uint8_t, 64>, 32> &ab,
 }
 
 static void BM_calculate_non_sparse_highway(benchmark::State& state) {
-  array<array<uint8_t, 64>, 32> ab;
-  array<array<uint8_t, 64>, 32> wb;
-  array<array<int32_t, 64>, 32> partial_sum;
+  alignas(16)  array<array<uint8_t, 64>, 32> ab;
+  alignas(16)  array<array<uint8_t, 64>, 32> wb;
+  alignas(16)  array<array<int32_t, 64>, 32> partial_sum;
 
   for(size_t i = 0; i< 32; i++){
     ab[i].fill(uint8_t(12));
