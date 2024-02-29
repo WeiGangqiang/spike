@@ -2,12 +2,15 @@
 #include "gtest/gtest.h"
 #include <array>
 #include <hwy/highway.h>
+#include "AgentCounter.h"
+#include "AgentTrace.h"
 using namespace  std;
 namespace hn = hwy::HWY_NAMESPACE;
 
 class CalcNonSparseTest : public testing::Test {};
 
 TEST(CalcNonSparseTest, check_int8_convet) {
+
   uint8_t a = 0;
   int8_t b(a);
   ASSERT_EQ(b, 0);
@@ -238,5 +241,30 @@ TEST(CalcNonSparseTest, highway_and_normal_compare){
 
     ASSERT_TRUE(CompareEqual(ab, wb));
 }
+
+
+TEST(CalcNonSparseTest, test_time_stamp){
+
+    AgentTrace agentActivity;
+
+    agentActivity.Init(0, 1);
+    agentActivity.ToActive();
+    agentActivity.ToIdle();
+    agentActivity.ToActive();
+    agentActivity.ToIdle();
+
+    std::vector<uint32_t> usedPPn;
+    usedPPn.reserve(10240);
+    usedPPn.emplace_back(8);
+
+    std::cout<< (1ull << 28)  << std::endl;
+
+    auto time = std::chrono::system_clock::now().time_since_epoch();
+    std::cout<< "time :" << std::chrono::duration_cast<std::chrono::milliseconds>(time).count() <<std::endl;
+
+    agentActivity.Dump();
+
+}
+
 
 

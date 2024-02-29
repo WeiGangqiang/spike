@@ -4,7 +4,6 @@
 #include <benchmark/benchmark.h>
 #include <hwy/highway.h>
 using namespace  std;
-
 namespace hn = hwy::HWY_NAMESPACE;
 
 int calculate_non_sparse(array<array<uint8_t, 64>, 32>& ab, array<array<uint8_t, 64>, 32>& wb, array<array<int32_t, 64>, 32>&partial_sum) {
@@ -287,17 +286,30 @@ BENCHMARK(BM_calculate_non_sparse_highway);
 ////BENCHMARK(BM_normal_sum);
 //
 //
-//static void BM_normal_sum_neon(benchmark::State& state) {
-//  IntArray ab;
-//  IntArray aw;
-//  IntArray sum;
-//  ab.fill(2);
-//  aw.fill(4);
-//  sum.fill(0);
-//
-//  for (auto _ : state) {
-//    benchmark::DoNotOptimize(normal_sum_neon(ab, aw, sum));
-//  }
-//}
-//
-//BENCHMARK(BM_normal_sum_neon);
+
+uint64_t dataCalloc = 0;
+
+static void BM_calloc_free(benchmark::State &state) {
+  auto PGSIZE = (1ull << 28);
+  for (auto _ : state) {
+    auto npuMem = (char *)calloc(PGSIZE, 1);
+    dataCalloc += npuMem[10000];
+    free(npuMem);
+  }
+}
+
+BENCHMARK(BM_calloc_free);
+
+
+uint64_t dataMalloc = 0;
+
+static void BM_malloc_free(benchmark::State &state) {
+  auto PGSIZE = (1ull << 28);
+  for (auto _ : state) {
+    auto npuMem = (char *)malloc(PGSIZE);
+    dataMalloc += npuMem[10000];
+    free(npuMem);
+  }
+}
+
+BENCHMARK(BM_malloc_free);
