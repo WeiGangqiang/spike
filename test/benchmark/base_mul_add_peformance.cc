@@ -3,6 +3,9 @@
 #include <array>
 #include <benchmark/benchmark.h>
 #include <hwy/highway.h>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 using namespace  std;
 namespace hn = hwy::HWY_NAMESPACE;
 
@@ -144,6 +147,95 @@ static void BM_calculate_non_sparse_highway(benchmark::State& state) {
 }
 
 BENCHMARK(BM_calculate_non_sparse_highway);
+
+
+    // // 将文件映射到内存
+    // char* data = mmap(NULL, fileSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    // if (data == MAP_FAILED) {
+    //     perror("mmap failed");
+    //     close(fd);
+    //     return 1;
+    // }
+
+    // // 现在可以直接通过data指针访问和修改文件内容了
+    // // ...
+
+    // // 完成后解除映射和关闭文件
+    // munmap(data, fileSize);
+
+
+int8_t * ReadBinFile(std::string file_path) {
+  std::ifstream file(file_path, std::ios::binary);
+
+  if (!file) {
+    std::cerr << "Failed to open the file." << file_path << std::endl;
+    return nullptr;
+  }
+
+  file.seekg(0, std::ios::end);
+  std::streampos file_size = file.tellg();
+  file.seekg(0, std::ios::beg);
+  int8_t* data =  new int8_t[file_size];
+  // std::size_t num_elements = file_size / sizeof(T);
+  file.read(reinterpret_cast<char *>(data), file_size);
+
+  file.close();
+  return data;
+}
+int8_t * ptr;
+
+static void BM_readbinfile(benchmark::State& state) {
+  for (auto _ : state) {
+    ptr = ReadBinFile("./test/benchmark/Loop_1_fpn_input.bin");
+    delete[] ptr;
+  }
+}
+
+BENCHMARK(BM_readbinfile)->Iterations(1);
+
+constexpr uint32_t K=1024; 
+constexpr uint32_t M=1024 * K; 
+constexpr uint32_t M100=100* M; 
+
+uint8_t src[M100];
+uint8_t dst[M100];
+
+static void BM_testmemcpy(benchmark::State& state) {
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(memcpy(dst,src, sizeof(src)));
+  }
+}
+
+BENCHMARK(BM_testmemcpy)->Iterations(1);
+
+
+size_t bitwise(int8_t *data1, int8_t *data2, size_t len) {
+  size_t i = 0;
+  for (; i < len; i++) {
+    if (data1[i] != data2[i]) {
+      break;
+    }
+  }
+  return i;
+}
+
+
+static void BM_testmemcmp(benchmark::State& state) {
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(memcmp(dst,src, sizeof(src)));
+  }
+}
+
+BENCHMARK(BM_testmemcmp)->Iterations(1);
+
+
+static void BM_testbitwise(benchmark::State& state) {
+  for (auto _ : state) {
+    benchmark::DoNotOptimize(bitwise((int8_t *)dst,(int8_t *)src, sizeof(src)));
+  }
+}
+
+BENCHMARK(BM_testbitwise)->Iterations(1);
 
 
 //
